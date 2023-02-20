@@ -96,7 +96,7 @@ func doClientStreaming(c calcpb.CalculatorServiceClient) {
 	}
 	// we iterate over the slice and send each message individually
 	for _, req := range requests {
-		log.Printf("Sending request: %v\n", req)
+		log.Printf("Sending number: %v\n", req)
 		stream.Send(req)
 		time.Sleep(1000 * time.Millisecond)
 	}
@@ -104,5 +104,5 @@ func doClientStreaming(c calcpb.CalculatorServiceClient) {
 	if err != nil {
 		log.Fatalf("Error while receiving response from ComputeAverage: %v", err)
 	}
-	fmt.Printf("ComputeAverage response: %v\n", res)
+	fmt.Printf("The average is: %v\n", res)
 }
