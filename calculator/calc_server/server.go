@@ -11,7 +11,7 @@ import (
 )
 
 type server struct {
-	calcpb.UnimplementedSumServiceServer
+	calcpb.UnimplementedCalculatorServiceServer
 }
 
 func (*server) Sum(ctx context.Context, req *calcpb.SumRequest) (*calcpb.SumResponse, error) {
@@ -25,7 +25,7 @@ func (*server) Sum(ctx context.Context, req *calcpb.SumRequest) (*calcpb.SumResp
 	return res, nil
 }
 
-func (*server) PrimeNumberDecomposition(req *calcpb.PrimeNumberDecompositionRequest, stream calcpb.SumService_PrimeNumberDecompositionServer) error {
+func (*server) PrimeNumberDecomposition(req *calcpb.PrimeNumberDecompositionRequest, stream calcpb.CalculatorService_PrimeNumberDecompositionServer) error {
 	fmt.Printf("Received PrimeNumberDecomposition RPC: %v\n", req)
 
 	number := req.GetNumber()
@@ -45,7 +45,7 @@ func (*server) PrimeNumberDecomposition(req *calcpb.PrimeNumberDecompositionRequ
 	return nil
 }
 
-func (*server) ComputeAverage(stream calcpb.SumService_ComputeAverageServer) error {
+func (*server) ComputeAverage(stream calcpb.CalculatorService_ComputeAverageServer) error {
 	fmt.Printf("ComputeAverage function is invoked with a streaming request\n")
 	var result float64
 	var counter int
@@ -75,7 +75,7 @@ func main() {
 	}
 
 	s := grpc.NewServer()
-	calcpb.RegisterSumServiceServer(s, &server{})
+	calcpb.RegisterCalculatorServiceServer(s, &server{})
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
