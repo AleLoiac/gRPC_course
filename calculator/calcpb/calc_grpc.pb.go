@@ -26,6 +26,8 @@ type SumServiceClient interface {
 	Sum(ctx context.Context, in *SumRequest, opts ...grpc.CallOption) (*SumResponse, error)
 	// Streaming Server API
 	PrimeNumberDecomposition(ctx context.Context, in *PrimeNumberDecompositionRequest, opts ...grpc.CallOption) (SumService_PrimeNumberDecompositionClient, error)
+	// Streaming Client API
+	ComputeAverage(ctx context.Context, opts ...grpc.CallOption) (SumService_ComputeAverageClient, error)
 }
 
 type sumServiceClient struct {
@@ -77,6 +79,40 @@ func (x *sumServicePrimeNumberDecompositionClient) Recv() (*PrimeNumberDecomposi
 	return m, nil
 }
 
+func (c *sumServiceClient) ComputeAverage(ctx context.Context, opts ...grpc.CallOption) (SumService_ComputeAverageClient, error) {
+	stream, err := c.cc.NewStream(ctx, &SumService_ServiceDesc.Streams[1], "/calc.SumService/ComputeAverage", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &sumServiceComputeAverageClient{stream}
+	return x, nil
+}
+
+type SumService_ComputeAverageClient interface {
+	Send(*ComputeAverageRequest) error
+	CloseAndRecv() (*ComputeAverageResponse, error)
+	grpc.ClientStream
+}
+
+type sumServiceComputeAverageClient struct {
+	grpc.ClientStream
+}
+
+func (x *sumServiceComputeAverageClient) Send(m *ComputeAverageRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *sumServiceComputeAverageClient) CloseAndRecv() (*ComputeAverageResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(ComputeAverageResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // SumServiceServer is the server API for SumService service.
 // All implementations must embed UnimplementedSumServiceServer
 // for forward compatibility
@@ -85,6 +121,8 @@ type SumServiceServer interface {
 	Sum(context.Context, *SumRequest) (*SumResponse, error)
 	// Streaming Server API
 	PrimeNumberDecomposition(*PrimeNumberDecompositionRequest, SumService_PrimeNumberDecompositionServer) error
+	// Streaming Client API
+	ComputeAverage(SumService_ComputeAverageServer) error
 	mustEmbedUnimplementedSumServiceServer()
 }
 
@@ -97,6 +135,9 @@ func (UnimplementedSumServiceServer) Sum(context.Context, *SumRequest) (*SumResp
 }
 func (UnimplementedSumServiceServer) PrimeNumberDecomposition(*PrimeNumberDecompositionRequest, SumService_PrimeNumberDecompositionServer) error {
 	return status.Errorf(codes.Unimplemented, "method PrimeNumberDecomposition not implemented")
+}
+func (UnimplementedSumServiceServer) ComputeAverage(SumService_ComputeAverageServer) error {
+	return status.Errorf(codes.Unimplemented, "method ComputeAverage not implemented")
 }
 func (UnimplementedSumServiceServer) mustEmbedUnimplementedSumServiceServer() {}
 
@@ -150,6 +191,32 @@ func (x *sumServicePrimeNumberDecompositionServer) Send(m *PrimeNumberDecomposit
 	return x.ServerStream.SendMsg(m)
 }
 
+func _SumService_ComputeAverage_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(SumServiceServer).ComputeAverage(&sumServiceComputeAverageServer{stream})
+}
+
+type SumService_ComputeAverageServer interface {
+	SendAndClose(*ComputeAverageResponse) error
+	Recv() (*ComputeAverageRequest, error)
+	grpc.ServerStream
+}
+
+type sumServiceComputeAverageServer struct {
+	grpc.ServerStream
+}
+
+func (x *sumServiceComputeAverageServer) SendAndClose(m *ComputeAverageResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *sumServiceComputeAverageServer) Recv() (*ComputeAverageRequest, error) {
+	m := new(ComputeAverageRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // SumService_ServiceDesc is the grpc.ServiceDesc for SumService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -167,6 +234,11 @@ var SumService_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "PrimeNumberDecomposition",
 			Handler:       _SumService_PrimeNumberDecomposition_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "ComputeAverage",
+			Handler:       _SumService_ComputeAverage_Handler,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "calculator/calcpb/calc.proto",
