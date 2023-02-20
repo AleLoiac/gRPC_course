@@ -26,7 +26,9 @@ func main() {
 
 	//doServerStreaming(c)
 
-	doClientStreaming(c)
+	//doClientStreaming(c)
+
+	doBiDirectionalStreaming(c)
 }
 
 func doUnary(c greetpb.GreetServiceClient) {
@@ -105,4 +107,16 @@ func doClientStreaming(c greetpb.GreetServiceClient) {
 		log.Fatalf("Error while receiving response from LongGreet: %v", err)
 	}
 	fmt.Printf("LonGreet response: %v\n", res)
+}
+
+func doBiDirectionalStreaming(c greetpb.GreetServiceClient) {
+	fmt.Println("Starting Bi Directional Streaming RPC...")
+	// create a stream by invoking the client
+	stream, err := c.GreetEveryone(context.Background())
+	if err != nil {
+		log.Fatalf("Error while creating the stream: %v", err)
+	}
+	waitc := make(chan struct{})
+
+	<-waitc
 }
