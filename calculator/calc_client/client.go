@@ -20,19 +20,17 @@ func main() {
 
 	c := calcpb.NewSumServiceClient(cc)
 
-	//optional user prompt
+	//doUnary(c)
+
+	doServerStreaming(c)
+}
+
+func doUnary(c calcpb.SumServiceClient) {
 	var x, y int32
-	_, err = fmt.Scan(&x, &y)
+	_, err := fmt.Scan(&x, &y)
 	if err != nil {
 		return
 	}
-
-	//doUnary(c, x, y)
-
-	doServerStreaming(c, x)
-}
-
-func doUnary(c calcpb.SumServiceClient, x int32, y int32) {
 	fmt.Println("Starting Unary RPC...")
 	req := &calcpb.SumRequest{
 		Sum: &calcpb.Sum{
@@ -48,8 +46,13 @@ func doUnary(c calcpb.SumServiceClient, x int32, y int32) {
 	log.Printf("Response from Sum: %v", res.Result)
 }
 
-func doServerStreaming(c calcpb.SumServiceClient, x int32) {
+func doServerStreaming(c calcpb.SumServiceClient) {
 	fmt.Println("Starting to do a PrimeDecomposition Server Streaming RPC...")
+	var x int32
+	_, err := fmt.Scan(&x)
+	if err != nil {
+		return
+	}
 	req := &calcpb.PrimeNumberDecompositionRequest{
 		Number: x,
 	}
