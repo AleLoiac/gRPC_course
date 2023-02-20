@@ -24,24 +24,6 @@ func (*server) Sum(ctx context.Context, req *calcpb.SumRequest) (*calcpb.SumResp
 	return res, nil
 }
 
-//func (*server) PrimeNumDecomposition(req *calcpb.PrimeNumberDecomposition, stream calcpb.SumService_PrimeNumberDecompositionServer) error {
-//	fmt.Printf("Prime decomposition function is invoked with %v\n", req)
-//	number := req.GetNumber()
-//	var k int32 = 2
-//	for number > 1 {
-//		if number%k == 0 {
-//			res := &calcpb.PrimeNumberDecompositionResponse{
-//				Result: k,
-//			}
-//			stream.Send(res)
-//			number = number / k
-//		} else {
-//			k++
-//		}
-//	}
-//	return nil
-//}
-
 func (*server) PrimeNumberDecomposition(req *calcpb.PrimeNumberDecompositionRequest, stream calcpb.SumService_PrimeNumberDecompositionServer) error {
 	fmt.Printf("Received PrimeNumberDecomposition RPC: %v\n", req)
 
