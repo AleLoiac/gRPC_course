@@ -29,7 +29,8 @@ func main() {
 	//doClientStreaming(c)
 	//doBiDirectionalStreaming(c)
 
-	doUnaryWithDeadline(c, 5)
+	doUnaryWithDeadline(c, 5*time.Second) // should timeout
+	doUnaryWithDeadline(c, 1*time.Second) // should complete
 }
 
 func doUnary(c greetpb.GreetServiceClient) {
@@ -194,8 +195,7 @@ func doUnaryWithDeadline(c greetpb.GreetServiceClient, timeout time.Duration) {
 		} else {
 			log.Fatalf("Error while calling GreetWithDeadline RPC: %v", err)
 		}
-
-		log.Fatalf("Error while calling Greet RPC: %v", err)
+		return
 	}
 	log.Printf("Response from Greet: %v", res.Result)
 }
