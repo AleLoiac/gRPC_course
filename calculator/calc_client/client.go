@@ -123,7 +123,7 @@ func doBiDirectionalStreaming(c calcpb.CalculatorServiceClient) {
 	go func() {
 		numbers := []int32{4, 7, 2, 19, 4, 6, 32}
 		for _, number := range numbers {
-			fmt.Printf("Sending message: %v\n", number)
+			fmt.Printf("Sending number: %v\n", number)
 			stream.Send(&calcpb.FindMaximumRequest{
 				Number: number,
 			})
