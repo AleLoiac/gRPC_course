@@ -117,28 +117,16 @@ func doBiDirectionalStreaming(c calcpb.CalculatorServiceClient) {
 		log.Fatalf("Error while creating the stream: %v", err)
 	}
 
-	requests := []*calcpb.FindMaximumRequest{
-		&calcpb.FindMaximumRequest{
-			Number: 5,
-		},
-		&calcpb.FindMaximumRequest{
-			Number: 11,
-		},
-		&calcpb.FindMaximumRequest{
-			Number: 10,
-		},
-		&calcpb.FindMaximumRequest{
-			Number: 43,
-		},
-	}
-
 	waitc := make(chan struct{})
 
 	// send some messages to the client (go routine)
 	go func() {
-		for _, req := range requests {
-			fmt.Printf("Sending message: %v\n", req)
-			stream.Send(req)
+		numbers := []int32{4, 7, 2, 19, 4, 6, 32}
+		for _, number := range numbers {
+			fmt.Printf("Sending message: %v\n", number)
+			stream.Send(&calcpb.FindMaximumRequest{
+				Number: number,
+			})
 			time.Sleep(1000 * time.Millisecond)
 		}
 		stream.CloseSend()
@@ -154,7 +142,7 @@ func doBiDirectionalStreaming(c calcpb.CalculatorServiceClient) {
 			if err != nil {
 				log.Fatalf("Error while receiving: %v", err)
 			}
-			fmt.Printf("Received: %v\n", res.GetMaximum())
+			fmt.Printf("Received new maximum: %v\n", res.GetMaximum())
 		}
 		close(waitc)
 	}()
