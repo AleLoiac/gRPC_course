@@ -32,6 +32,14 @@ message ComputeAverageResponse {
   double average = 1;
 }
 
+message FindMaximumRequest {
+  int32 number = 1;
+}
+
+message FindMaximumResponse {
+  int32 maximum = 1;
+}
+
 service CalculatorService{
   // Unary API
   rpc Sum(SumRequest) returns (SumResponse) {};
@@ -39,4 +47,6 @@ service CalculatorService{
   rpc PrimeNumberDecomposition(PrimeNumberDecompositionRequest) returns (stream PrimeNumberDecompositionResponse) {};
   // Streaming Client API
   rpc ComputeAverage(stream ComputeAverageRequest) returns (ComputeAverageResponse) {};
+  // BiDirectional Streaming
+  rpc FindMaximum(stream FindMaximumRequest) returns (stream FindMaximumResponse) {};
 }
